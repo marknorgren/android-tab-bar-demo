@@ -4,26 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Slider
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.Icon
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.Favorite
 
-
-	class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContent {
@@ -38,6 +31,9 @@ import androidx.compose.runtime.Composable
 							1 -> BadgeView(badgeValue.value.toInt())
 						}
 
+						Spacer(modifier = Modifier.weight(1f))
+
+						// Moved BottomNavigation to bottom
 						BottomNavigation {
 							BottomNavigationItem(
 								icon = { Icon(Icons.Filled.Settings, contentDescription = "Slider") },
@@ -45,15 +41,12 @@ import androidx.compose.runtime.Composable
 								selected = selectedTab.value == 0,
 								onClick = { selectedTab.value = 0 }
 							)
-
 							BottomNavigationItem(
 								icon = {
-									Icon(Icons.Filled.Notifications, contentDescription = "Badge")
-									if (badgeValue.value > 0) {
-										Text(
-											text = badgeValue.value.toInt().toString(),
-											color = Color.White,
-											modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+									BadgedBox(badge = { Badge { Text(badgeValue.value.toInt().toString()) } }) {
+										Icon(
+											Icons.Filled.Favorite,
+											contentDescription = "Favorite"
 										)
 									}
 								},
@@ -71,9 +64,18 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun SliderView(badgeValue: androidx.compose.runtime.MutableState<Float>) {
-	Column(modifier = Modifier.padding(16.dp)) {
+	Column(
+		modifier = Modifier
+			.padding(24.dp)  // Padding for the entire column
+	) {
 		Text("Set Badge Value", style = MaterialTheme.typography.h4)
-		Slider(value = badgeValue.value, onValueChange = { newValue -> badgeValue.value = newValue }, valueRange = 0f..100f, steps = 100)
+		Slider(
+			value = badgeValue.value,
+			onValueChange = { newValue -> badgeValue.value = newValue },
+			valueRange = 0f..100f,
+			steps = 100,
+			modifier = Modifier.padding(bottom = 16.dp)  // Added padding to the Slider
+		)
 		Text("Selected badge value: ${badgeValue.value.toInt()}", style = MaterialTheme.typography.h5)
 	}
 }
